@@ -1,21 +1,24 @@
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import './App.css';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import PlayTimer from './PlayTimer';
 import PauseTimer from './PauseTimer';
 
-function Timer({ endTime, duration, elapsedTime, setElapsedTime, handleBack, resetTimer, handleEndTimer, autoStart }) {
+function Timer({
+  endTime,
+  duration,
+  elapsedTime,
+  setElapsedTime,
+  handleBack,
+  resetTimer,
+  handleEndTimer,
+  autoStart
+}) {
   const [isRunning, setIsRunning] = useState(false);
   const timerRef = useRef(null);
 
-  useEffect(() => {
-    if (autoStart) {
-      startTimer();
-    }
-  }, [autoStart]);
-
-  const calculateEndTime = () => {
+  const calculateEndTime = useCallback(() => {
     const now = new Date();
     const end = new Date();
     end.setHours(endTime.hours, endTime.minutes, 0, 0);
@@ -25,9 +28,9 @@ function Timer({ endTime, duration, elapsedTime, setElapsedTime, handleBack, res
     }
 
     return end > now;
-  };
+  }, [endTime]);
 
-  const startTimer = () => {
+  const startTimer = useCallback(() => {
     if (!calculateEndTime()) return;
     setIsRunning(true);
     const totalDuration = duration * 60 * 1000;
@@ -46,12 +49,18 @@ function Timer({ endTime, duration, elapsedTime, setElapsedTime, handleBack, res
         setElapsedTime(timePassed);
       }
     }, 1000);
-  };
+  }, [calculateEndTime, duration, elapsedTime, handleEndTimer, setElapsedTime]);
 
-  const pauseTimer = () => {
+  const pauseTimer = useCallback(() => {
     setIsRunning(false);
     clearInterval(timerRef.current);
-  };
+  }, []);
+
+  useEffect(() => {
+    if (autoStart) {
+      startTimer();
+    }
+  }, [autoStart, startTimer]);
 
   useEffect(() => {
     return () => clearInterval(timerRef.current);
@@ -84,7 +93,7 @@ function Timer({ endTime, duration, elapsedTime, setElapsedTime, handleBack, res
       ) : (
         <PauseTimer onClick={pauseTimer} />
       )}
-      <button className='reset' onClick={resetTimer}>Reset Timer Settings</button>
+      <button className="reset" onClick={resetTimer}>Reset Timer Settings</button>
     </div>
   );
 }
