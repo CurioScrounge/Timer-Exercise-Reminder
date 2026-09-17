@@ -6,7 +6,7 @@ import EndPage from './EndPage';
 import alertAudio from './assets/alert3.mp3';
 import Modal from './Modal';
 import Select from 'react-select';
-
+//fixed
 function App() {
   const [endTime, setEndTime] = useState({ hours: 4, minutes: 0 });
   const [duration, setDuration] = useState(45);
