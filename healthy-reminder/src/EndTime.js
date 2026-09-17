@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import './App.css';
 
 function EndTime({ endTime, setEndTime }) {
@@ -11,10 +11,6 @@ function EndTime({ endTime, setEndTime }) {
   const handleMinuteChange = (e) => {
     setEndTime({ ...endTime, minutes: parseInt(e.target.value) });
   };
-
-  useEffect(() => {
-    setEndTime({ hours, minutes });
-  }, [hours, minutes, setEndTime]);
 
   return (
     <div>

@@ -17,31 +17,31 @@ function Timer({
 }) {
   const [isRunning, setIsRunning] = useState(false);
   const timerRef = useRef(null);
+  const elapsedTimeRef = useRef(elapsedTime);
 
-  const calculateEndTime = useCallback(() => {
-    const now = new Date();
-    const end = new Date();
-    end.setHours(endTime.hours, endTime.minutes, 0, 0);
+  useEffect(() => {
+    elapsedTimeRef.current = elapsedTime;
+  }, [elapsedTime]);
 
-    if (end <= now) {
-      end.setDate(end.getDate() + 1);
+  const stopInterval = () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
     }
-
-    return end > now;
-  }, [endTime]);
+  };
 
   const startTimer = useCallback(() => {
-    if (!calculateEndTime()) return;
+    stopInterval();
     setIsRunning(true);
     const totalDuration = duration * 60 * 1000;
-    const startTime = new Date().getTime() - elapsedTime;
+    const startTime = Date.now() - elapsedTimeRef.current;
 
     timerRef.current = setInterval(() => {
-      const now = new Date().getTime();
-      const timePassed = now - startTime;
+      const timePassed = Date.now() - startTime;
       const timeRemaining = totalDuration - timePassed;
+
       if (timeRemaining <= 0) {
-        clearInterval(timerRef.current);
+        stopInterval();
         setIsRunning(false);
         setElapsedTime(0);
         handleEndTimer();
@@ -49,24 +49,21 @@ function Timer({
         setElapsedTime(timePassed);
       }
     }, 1000);
-  }, [calculateEndTime, duration, elapsedTime, handleEndTimer, setElapsedTime]);
+  }, [duration, handleEndTimer, setElapsedTime]);
 
   const pauseTimer = useCallback(() => {
     setIsRunning(false);
-    clearInterval(timerRef.current);
+    stopInterval();
   }, []);
 
   useEffect(() => {
     if (autoStart) {
       startTimer();
     }
-  }, [autoStart, startTimer]);
+    return () => stopInterval();
+  }, []); // Runs on mount and unmount only
 
-  useEffect(() => {
-    return () => clearInterval(timerRef.current);
-  }, []);
-
-  const timeRemaining = duration * 60 * 1000 - elapsedTime;
+  const timeRemaining = Math.max(0, duration * 60 * 1000 - elapsedTime);
   const minutes = Math.floor(timeRemaining / 60000);
   const seconds = Math.floor((timeRemaining % 60000) / 1000);
 

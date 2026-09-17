@@ -19,22 +19,28 @@ function App() {
 
   const audioRef = useRef(new Audio(alertAudio));
 
-  useEffect(() => {
-    const checkTime = () => {
-      const now = new Date();
-      const currentHour = now.getHours();
-      setShowSleepMessage(currentHour >= 22);
+useEffect(() => {
+  const checkTime = () => {
+    const now = new Date();
+    const currentHour = now.getHours();
+    setShowSleepMessage(currentHour >= 22);
 
-      const end = new Date();
-      end.setHours(endTime.hours, endTime.minutes, 0, 0);
-      if (now >= end && currentPage === 'timer') {
-        resetTimer();
-      }
-    };
+    const end = new Date();
+    end.setHours(endTime.hours, endTime.minutes, 0, 0);
 
-    const interval = setInterval(checkTime, 1000);
-    return () => clearInterval(interval);
-  }, [endTime, currentPage]);
+    // Roll end time to tomorrow if it's earlier than current time
+    if (end <= now) {
+      end.setDate(end.getDate() + 1);
+    }
+
+    if (now >= end && currentPage === 'timer') {
+      resetTimer();
+    }
+  };
+
+  const interval = setInterval(checkTime, 1000);
+  return () => clearInterval(interval);
+}, [endTime, currentPage]);
 
   const handleStart = () => {
     const now = new Date();
