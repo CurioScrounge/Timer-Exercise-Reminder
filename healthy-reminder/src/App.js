@@ -17,7 +17,7 @@ function App() {
   const [currentPage, setCurrentPage] = useState('home');
   const [showModal, setShowModal] = useState(false);
 
-  const audioRef = useRef(new Audio(alertAudio)); // Use the imported URL
+  const audioRef = useRef(new Audio(alertAudio));
 
   useEffect(() => {
     const checkTime = () => {
@@ -50,9 +50,7 @@ function App() {
     setCurrentPage('timer');
   };
 
-  const closeModal = () => {
-    setShowModal(false);
-  };
+  const closeModal = () => setShowModal(false);
 
   const handleBack = () => {
     setShowSettings(true);
@@ -88,6 +86,7 @@ function App() {
     audio.currentTime = 0;
   };
 
+  // When exercise page is finished, restart timer cycle
   const handleBackToTimer = () => {
     setElapsedTime(0);
     setCurrentPage('timer');
@@ -95,37 +94,48 @@ function App() {
 
   return (
     <main>
-      {showSleepMessage && <div className="sleep-message">It's getting late! Please consider sleeping.</div>}
+      {showSleepMessage && (
+        <div className="sleep-message">
+          It's getting late! Please consider sleeping.
+        </div>
+      )}
       {showEndPopup && (
         <div className="popup">
           <div className="popup-content">
             <p>Time to get up and exercise!</p>
-            <button className='timer_end_button' onClick={handlePopupButton}>Follow Exercises</button>
+            <button className="timer_end_button" onClick={handlePopupButton}>
+              Follow Exercises
+            </button>
           </div>
         </div>
       )}
       {showModal && (
-        <Modal message="Please choose an end time later than the current time." onClose={closeModal}/>
+        <Modal
+          message="Please choose an end time later than the current time."
+          onClose={closeModal}
+        />
       )}
       {currentPage === 'home' && showSettings ? (
         <div className="settings">
           <EndTime endTime={endTime} setEndTime={setEndTime} />
           <DurationSelector setDuration={setDuration} />
-          <button className='buttons' onClick={handleStart}>Start Timer</button>
+          <button className="buttons" onClick={handleStart}>
+            Start Timer
+          </button>
         </div>
       ) : currentPage === 'timer' ? (
-        <div className='contain_Timer'>
-        <Timer
-          endTime={endTime}
-          duration={duration}
-          elapsedTime={elapsedTime}
-          setElapsedTime={setElapsedTime}
-          handleBack={handleBack}
-          handleStartAfresh={handleStartAfresh}
-          resetTimer={resetTimer}
-          handleEndTimer={handleEndTimer}
-          autoStart={true}
-        />
+        <div className="contain_Timer">
+          <Timer
+            endTime={endTime}
+            duration={duration}
+            elapsedTime={elapsedTime}
+            setElapsedTime={setElapsedTime}
+            handleBack={handleBack}
+            handleStartAfresh={handleStartAfresh}
+            resetTimer={resetTimer}
+            handleEndTimer={handleEndTimer}
+            autoStart={true}
+          />
         </div>
       ) : (
         <EndPage handleBackToTimer={handleBackToTimer} />
@@ -145,54 +155,60 @@ function DurationSelector({ setDuration }) {
   };
 
   return (
-    <div className='duration' style={{ display: 'flex', alignItems: 'center' }}>
-      <label htmlFor="duration" style={{ marginRight: '10px' }}>Select Duration:</label>
+    <div className="duration" style={{ display: 'flex', alignItems: 'center' }}>
+      <label htmlFor="duration" style={{ marginRight: '10px' }}>
+        Select Duration:
+      </label>
       <Select
         id="duration"
         options={options}
-        defaultValue={options[44]} // Default to 45 minutes
+        defaultValue={options[44]}
         onChange={handleChange}
         isSearchable={false}
         styles={{
           control: (provided, state) => ({
             ...provided,
-            width: '210px', // Set specific width
+            width: '210px',
             fontFamily: 'Raleway, system-ui',
             backgroundColor: '#1abc9c',
             color: '#fff',
-            padding:'3px',
+            padding: '3px',
             border: 'none',
             borderRadius: '3px',
             cursor: 'pointer',
-            fontSize: '1.8rem', 
-            boxShadow: state.isFocused ? '0 0 5px rgba(26, 188, 156, 0.5)' : provided.boxShadow, // Keep box shadow on focus
+            fontSize: '1.8rem',
+            boxShadow: state.isFocused
+              ? '0 0 5px rgba(26, 188, 156, 0.5)'
+              : provided.boxShadow,
             '&:hover': {
-              boxShadow: '0 0 7px rgba(26, 188, 156, 0.5)' // Keep box shadow on hover
+              boxShadow: '0 0 7px rgba(26, 188, 156, 0.5)'
             }
           }),
           singleValue: (provided) => ({
             ...provided,
-            color: '#fff',
+            color: '#fff'
           }),
           menu: (provided) => ({
             ...provided,
-            width: '200px', 
-          }),
-          focus: (provided)=>({
-            ...provided,
-            boxShadow:'0 0 5px rgba(26, 188, 156, 0.5)',
+            width: '200px'
           }),
           option: (provided, state) => ({
             ...provided,
-            color: state.isSelected ? '#fff' : 'grey', // Set text color for options
-            backgroundColor: state.isSelected ? '#1abc9c' : state.isFocused ? '#d5f5e3' : 'white',            fontSize: '1.8rem' // Set font size for options
+            color: state.isSelected ? '#fff' : 'grey',
+            backgroundColor: state.isSelected
+              ? '#1abc9c'
+              : state.isFocused
+              ? '#d5f5e3'
+              : 'white',
+            fontSize: '1.8rem'
           })
         }}
         components={{
-          IndicatorSeparator: () => null // Remove the default indicator separator
+          IndicatorSeparator: () => null
         }}
       />
     </div>
   );
 }
+
 export default App;
